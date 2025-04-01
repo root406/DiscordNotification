@@ -1,0 +1,9 @@
+{
+  "name": "DiscordNotifierModule",
+  "main": "de.root406.discordnotification.DiscordNotification",
+  "description": "A module to send Discord notifications for server and module events",
+  "version": "1.0",
+  "author": "root406",
+  "group": "notification",
+  "dependencies": []
+}

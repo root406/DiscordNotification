@@ -1,0 +1,8 @@
+{
+  "webhookUrl": "https://your-webhook-url",
+  "notifyModuleLoaded": true,
+  "notifyModuleStarted": true,
+  "notifyModuleStopped": true,
+  "notifyServiceStarted": true,
+  "notifyServiceStopped": true
+}
