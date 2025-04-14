@@ -23,7 +23,35 @@ Du kannst die Einstellungen anpassen:
   "webhookUrl": "DEIN_DISCORD_WEBHOOK",
   "notifyModuleLoaded": true,
   "notifyModuleStarted": true,
+  "notifyModuleReload": true,
   "notifyModuleStopped": true,
   "notifyServiceStarted": true,
-  "notifyServiceStopped": true
+  "notifyServiceStopped": true,
+  "customMessages": {
+    "moduleLoaded": {
+      "message": "📦 Das Modul %module_name% wurde erfolgreich geladen.",
+      "color": "0x00FF00"
+    },
+    "moduleStarted": {
+      "message": "🚀 Das Modul %module_name% wurde erfolgreich gestartet.",
+      "color": "0x1E90FF"
+    },
+    "moduleStopped": {
+      "message": "🛑 Das Modul %module_name% wurde gestoppt.",
+      "color": "0xFF0000"
+    },
+    "moduleReload": {
+      "message": "🛑 Das Modul %module_name% wurde gestoppt.",
+      "color": "0xFF0000"
+    },
+    "serviceStarted": {
+      "message": "🚀 Der Server %service_name% wurde gestartet.",
+      "color": "0x32CD32"
+    },
+    "serviceStopped": {
+      "message": "🛑 Der Server %service_name% wurde gestoppt.",
+      "color": "0xFF4500"
+    }
+  }
 }
+
