@@ -1,19 +1,34 @@
 package de.root406.discordnotification.utils;
 
-public class Messages {
-    public final CustomMessage moduleLoaded;
-    public final CustomMessage moduleStarted;
-    public final CustomMessage moduleStopped;
-    public final CustomMessage moduleReload;
-    public final CustomMessage serviceStarted;
-    public final CustomMessage serviceStopped;
+import java.util.HashMap;
+import java.util.Map;
 
-    public Messages(CustomMessage moduleLoaded, CustomMessage moduleStarted, CustomMessage moduleStopped, CustomMessage serviceStarted, CustomMessage serviceStopped, CustomMessage moduleReload) {
-        this.moduleLoaded = moduleLoaded;
-        this.moduleStarted = moduleStarted;
-        this.moduleStopped = moduleStopped;
-        this.moduleReload = moduleReload;
-        this.serviceStarted = serviceStarted;
-        this.serviceStopped = serviceStopped;
+public class Messages {
+
+    private final Map<String, CustomMessage> messages;
+
+    public Messages(CustomMessage moduleLoaded, CustomMessage moduleStarted, CustomMessage moduleStopped, CustomMessage moduleReload, CustomMessage serviceStarted, CustomMessage serviceStopped) {
+        this.messages = new HashMap<>();
+        this.messages.put("moduleLoaded", moduleLoaded);
+        this.messages.put("moduleStarted", moduleStarted);
+        this.messages.put("moduleStopped", moduleStopped);
+        this.messages.put("moduleReload", moduleReload);
+        this.messages.put("serviceStarted", serviceStarted);
+        this.messages.put("serviceStopped", serviceStopped);
+    }
+
+    // Getter für das Abrufen von Nachrichten basierend auf dem Schlüssel
+    public CustomMessage getMessage(String key) {
+        return this.messages.getOrDefault(key, null);
+    }
+
+    // Methode zum dynamischen Hinzufügen oder Aktualisieren einer Nachricht
+    public void addOrUpdateMessage(String key, CustomMessage message) {
+        this.messages.put(key, message);
+    }
+
+    // Überprüfen, ob eine Nachricht vorhanden ist
+    public boolean containsMessage(String key) {
+        return this.messages.containsKey(key);
     }
 }
