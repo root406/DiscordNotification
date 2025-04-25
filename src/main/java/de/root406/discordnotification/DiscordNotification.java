@@ -1,11 +1,9 @@
 package de.root406.discordnotification;
 
-import de.root406.discordnotification.events.PlayerJoinListener;
 import de.root406.discordnotification.utils.CustomMessage;
 import de.root406.discordnotification.utils.DiscordWebhook;
 import de.root406.discordnotification.utils.Messages;
 import eu.cloudnetservice.driver.event.EventListener;
-import eu.cloudnetservice.driver.event.EventManager;
 import eu.cloudnetservice.driver.event.events.module.ModulePostLoadEvent;
 import eu.cloudnetservice.driver.event.events.module.ModulePostReloadEvent;
 import eu.cloudnetservice.driver.event.events.module.ModulePostStartEvent;
@@ -17,11 +15,13 @@ import eu.cloudnetservice.driver.module.ModuleLifeCycle;
 import eu.cloudnetservice.driver.module.ModuleTask;
 import eu.cloudnetservice.driver.service.ServiceLifeCycle;
 import eu.cloudnetservice.node.event.service.CloudServicePreLifecycleEvent;
-import lombok.NonNull;
 
 import java.nio.file.Path;
+import java.util.logging.Logger;
 
 public class DiscordNotification extends DriverModule {
+
+    private static final Logger LOGGER = Logger.getLogger(DiscordNotification.class.getName());
 
     private String webhookUrl;
     private boolean notifyModuleLoaded;
@@ -37,51 +37,69 @@ public class DiscordNotification extends DriverModule {
         loadConfig();
     }
 
-    @ModuleTask(order = 64, lifecycle = ModuleLifeCycle.LOADED)
-    public void initListeners(@NonNull EventManager eventManager) {
-        // register the PlayerJoinListener
-        eventManager.registerListener(new PlayerJoinListener(webhookUrl));
-    }
-
     @ModuleTask(lifecycle = ModuleLifeCycle.STARTED)
     public void onStart() {
         if (notifyModuleStarted) {
-            sendDiscordMessage("Modul gestartet", customMessages.moduleStarted.message.replace("%module_name%", "CloudNet-Discord-Modul"), customMessages.moduleStarted.color);
+            sendDiscordMessage(
+                    "Modul gestartet",
+                    customMessages.moduleStarted.message.replace("%module_name%", "CloudNet-Discord-Modul"),
+                    customMessages.moduleStarted.color
+            );
         }
     }
 
     @ModuleTask(lifecycle = ModuleLifeCycle.STOPPED)
     public void onStop() {
         if (notifyModuleStopped) {
-            sendDiscordMessage("Modul gestoppt", customMessages.moduleStopped.message.replace("%module_name%", "CloudNet-Discord-Module"), customMessages.moduleStopped.color);
+            sendDiscordMessage(
+                    "Modul gestoppt",
+                    customMessages.moduleStopped.message.replace("%module_name%", "CloudNet-Discord-Modul"),
+                    customMessages.moduleStopped.color
+            );
         }
     }
 
     @EventListener
     public void onModuleLoad(ModulePostLoadEvent event) {
         if (notifyModuleLoaded) {
-            sendDiscordMessage("Modul geladen", customMessages.moduleLoaded.message.replace("%module_name%", event.module().moduleConfiguration().name()), customMessages.moduleLoaded.color);
+            sendDiscordMessage(
+                    "Modul geladen",
+                    customMessages.moduleLoaded.message.replace("%module_name%", event.module().moduleConfiguration().name()),
+                    customMessages.moduleLoaded.color
+            );
         }
     }
 
     @EventListener
     public void onModuleReload(ModulePostReloadEvent event) {
         if (notifyModuleReload) {
-            sendDiscordMessage("Modul Neugeladen", customMessages.moduleReload.message.replace("%module_name%", event.module().moduleConfiguration().name()), customMessages.moduleLoaded.color);
+            sendDiscordMessage(
+                    "Modul Neugeladen",
+                    customMessages.moduleReload.message.replace("%module_name%", event.module().moduleConfiguration().name()),
+                    customMessages.moduleReload.color
+            );
         }
     }
 
     @EventListener
     public void onModuleStart(ModulePostStartEvent event) {
         if (notifyModuleStarted) {
-            sendDiscordMessage("Modul gestartet", customMessages.moduleStarted.message.replace("%module_name%", event.module().moduleConfiguration().name()), customMessages.moduleStarted.color);
+            sendDiscordMessage(
+                    "Modul gestartet",
+                    customMessages.moduleStarted.message.replace("%module_name%", event.module().moduleConfiguration().name()),
+                    customMessages.moduleStarted.color
+            );
         }
     }
 
     @EventListener
     public void onModuleStop(ModulePostStopEvent event) {
         if (notifyModuleStopped) {
-            sendDiscordMessage("Modul gestoppt", customMessages.moduleStopped.message.replace("%module_name%", event.module().moduleConfiguration().name()), customMessages.moduleStopped.color);
+            sendDiscordMessage(
+                    "Modul gestoppt",
+                    customMessages.moduleStopped.message.replace("%module_name%", event.module().moduleConfiguration().name()),
+                    customMessages.moduleStopped.color
+            );
         }
     }
 
@@ -90,12 +108,18 @@ public class DiscordNotification extends DriverModule {
         String serviceName = event.serviceInfo().name();
         ServiceLifeCycle targetLifeCycle = event.targetLifecycle();
 
-        if (targetLifeCycle == ServiceLifeCycle.STOPPED && notifyServiceStopped) {
-            sendDiscordMessage("Server gestoppt", customMessages.serviceStopped.message.replace("%service_name%", serviceName), customMessages.serviceStopped.color);
-        }
-
         if (targetLifeCycle == ServiceLifeCycle.RUNNING && notifyServiceStarted) {
-            sendDiscordMessage("Server gestartet", customMessages.serviceStarted.message.replace("%service_name%", serviceName), customMessages.serviceStarted.color);
+            sendDiscordMessage(
+                    "Server gestartet",
+                    customMessages.serviceStarted.message.replace("%service_name%", serviceName),
+                    customMessages.serviceStarted.color
+            );
+        } else if (targetLifeCycle == ServiceLifeCycle.STOPPED && notifyServiceStopped) {
+            sendDiscordMessage(
+                    "Server gestoppt",
+                    customMessages.serviceStopped.message.replace("%service_name%", serviceName),
+                    customMessages.serviceStopped.color
+            );
         }
     }
 
@@ -107,11 +131,10 @@ public class DiscordNotification extends DriverModule {
         this.notifyModuleLoaded = document.getBoolean("notifyModuleLoaded", true);
         this.notifyModuleStarted = document.getBoolean("notifyModuleStarted", true);
         this.notifyModuleStopped = document.getBoolean("notifyModuleStopped", true);
-        this.notifyModuleStopped = document.getBoolean("notifyModuleReload", true);
+        this.notifyModuleReload = document.getBoolean("notifyModuleReload", true); // Korrektur hier
         this.notifyServiceStarted = document.getBoolean("notifyServiceStarted", true);
         this.notifyServiceStopped = document.getBoolean("notifyServiceStopped", true);
 
-        // Load custom messages with their colors
         this.customMessages = new Messages(
                 new CustomMessage(
                         document.getString("customMessages.moduleLoaded.message", "📦 Das Modul %module_name% wurde erfolgreich geladen."),
@@ -126,8 +149,8 @@ public class DiscordNotification extends DriverModule {
                         document.getString("customMessages.moduleStopped.color", "0xFF0000")
                 ),
                 new CustomMessage(
-                        document.getString("customMessages.moduleReload.message", "🛑 Das Modul %module_name% wurde reloadet."),
-                        document.getString("customMessages.moduleReload.color", "0xFF0000")
+                        document.getString("customMessages.moduleReload.message", "🔄 Das Modul %module_name% wurde neu geladen."),
+                        document.getString("customMessages.moduleReload.color", "0xFFA500")
                 ),
                 new CustomMessage(
                         document.getString("customMessages.serviceStarted.message", "🚀 Der Server %service_name% wurde gestartet."),
@@ -140,6 +163,7 @@ public class DiscordNotification extends DriverModule {
         );
 
         if (!document.contains("webhookUrl")) {
+            LOGGER.warning("Webhook-URL fehlt in der Konfiguration. Standardwerte werden verwendet.");
             saveConfig();
         }
     }
@@ -170,10 +194,13 @@ public class DiscordNotification extends DriverModule {
     }
 
     private void sendDiscordMessage(String title, String description, String hexColor) {
-        if (webhookUrl == null || webhookUrl.isEmpty()) return;
+        if (webhookUrl == null || webhookUrl.isEmpty()) {
+            LOGGER.warning("Webhook-URL ist leer. Nachricht wird nicht gesendet.");
+            return;
+        }
 
         try {
-            int color = Integer.parseInt(hexColor.replace("0x", ""), 16);  // Umwandlung von Hex zu int
+            int color = Integer.parseInt(hexColor.replace("0x", ""), 16); // Hex zu int konvertieren
             DiscordWebhook.WebhookMessage webhookMessage = new DiscordWebhook.WebhookMessage()
                     .addEmbed(new DiscordWebhook.EmbedObject()
                             .setTitle(title)
@@ -181,7 +208,10 @@ public class DiscordNotification extends DriverModule {
                             .setColor(color)
                     );
             DiscordWebhook.sendWebhook(webhookUrl, webhookMessage);
+        } catch (NumberFormatException e) {
+            LOGGER.severe("Ungültige Hex-Farbe: " + hexColor);
         } catch (Exception e) {
+            LOGGER.severe("Fehler beim Senden der Discord-Nachricht: " + e.getMessage());
             e.printStackTrace();
         }
     }
