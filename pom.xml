@@ -6,7 +6,7 @@
 
     <groupId>de.joel.discordnotification</groupId>
     <artifactId>DiscordNotification</artifactId>
-    <version>Module-1.1</version>
+    <version>Module-2.1</version>
 
     <properties>
         <maven.compiler.source>23</maven.compiler.source>
